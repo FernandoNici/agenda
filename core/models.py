@@ -14,5 +14,8 @@ class Evento(models.Model):
     local = models.CharField(max_length=500, null=True)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def get_data_evento(self):
+        return self.data_evento.strftime('%d/%m/%Y')
+
     # def __str__(self):
     #     return self.titulo
