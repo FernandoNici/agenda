@@ -1,10 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "model-page.html" %}
+
+{% block content %}
+    <h1>Evento</h1>
+
+    <form action="submit" method="post"> {% csrf_token %}
+        <label>Titulo</label><br>
+        <input type="text" name="titulo" size="30">
+        <br>
+
+        <label>Data do evento</label><br>
+        <input type="datetime-local" name="data_evento" size="30">
+        <br>
+
+        <label>Descrição</label><br>
+        <textarea name="descricao" rows="5" cols="31"></textarea>
+        <br>
+        <button type="submit">Salvar</button>
+        <a href="/">
+            <button type="button">Cancelar</button>
+        </a>
+    </form>
+
+{% endblock %}
+
+
