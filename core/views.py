@@ -1,8 +1,11 @@
+from datetime import datetime, timedelta
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import Http404, JsonResponse
 
 # Create your views here.
 from core.models import Evento
@@ -24,7 +27,10 @@ def eventos(request, titulo):
 @login_required(login_url='/login/')
 def lista_eventos(request):
     usuario = request.user
-    eventos = Evento.objects.filter(usuario=usuario)
+    data_atual = datetime.now() - timedelta(hours=1)
+
+    eventos = Evento.objects.filter(usuario=usuario)#,
+                                    #data_evento__gt=data_atual) #lt
     # eventos = Evento.objects.all()
     dados = {'eventos': eventos}
 
@@ -72,7 +78,7 @@ def submit_evento(request):
 
         id_evento = request.POST.get('id_evento')
         if id_evento:
-            Evento.filter(id=id_evento).update(titulo=titulo, data_evento=data_evento, descricao=descricao)
+            Evento.objects.filter(id=id_evento).update(titulo=titulo, data_evento=data_evento, descricao=descricao)
         else:
             Evento.objects.create(titulo=titulo, data_evento=data_evento, descricao=descricao, usuario=usuario)
 
@@ -81,9 +87,24 @@ def submit_evento(request):
 @login_required(login_url='/login/')
 def delete_evento(request, id_evento):
     usuario = request.user
-    evento = Evento.objects.get(id=id_evento)
+    try:
+        evento = Evento.objects.get(id=id_evento)
+    except Exception:
+        raise Http404('Objeto não existe')
 
     if evento.usuario == usuario:
         evento.delete()
 
+    raise Http404()
+
     return redirect('/')
+
+@login_required(login_url='/login/')
+def json_lista_eventos(request):
+    usuario = request.user
+    data_atual = datetime.now() - timedelta(hours=1)
+
+    eventos = Evento.objects.filter(usuario=usuario).values()
+
+    return JsonResponse(list(eventos), safe=False)
+

@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -15,9 +17,12 @@ class Evento(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def get_data_evento(self):
-        return self.data_evento.strftime('%d/%m/%Y')
+        return self.data_evento.strftime('%d/%m/%Y %H:%M')
 
     def get_data_evento_input(self):
         return self.data_evento.strftime('%Y-%m-%dT%H:%M')
     # def __str__(self):
     #     return self.titulo
+
+    def get_evento_atrasado(self):
+        return self.data_evento < datetime.now()
